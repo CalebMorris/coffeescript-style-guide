@@ -25,9 +25,12 @@ The details in this guide have been very heavily inspired by several existing st
         * [Tabs or Spaces?](#tabs_or_spaces)
         * [Maximum Line Length](#maximum_line_length)
         * [Blank Lines](#blank_lines)
+        * [Newlines](#newlines)
         * [Trailing Whitespace](#trailing_whitespace)
+        * [Parentheses](#parentheses)
         * [Optional Commas](#optional_commas)
         * [Encoding](#encoding)
+        * [Indentation](#indentation)
     * [Module Imports](#module_imports)
     * [Whitespace in Expressions and Statements](#whitespace)
     * [Comments](#comments)
@@ -35,6 +38,7 @@ The details in this guide have been very heavily inspired by several existing st
         * [Inline Comments](#inline_comments)
     * [Naming Conventions](#naming_conventions)
     * [Functions](#functions)
+    * [Objects](#objects)
     * [Strings](#strings)
     * [Conditionals](#conditionals)
     * [Looping and Comprehensions](#looping_and_comprehensions)
@@ -54,21 +58,53 @@ Use **spaces only**, with **2 spaces** per indentation level. Never mix tabs and
 <a name="maximum_line_length"/>
 ### Maximum Line Length
 
-Limit all lines to a maximum of 79 characters.
+Limit all lines to a maximum of 99 characters.
 
 <a name="blank_lines"/>
 ### Blank Lines
 
-Separate top-level function and class definitions with a single blank line.
+Do not separate top-level function and class definitions with a single blank line.
 
-Separate method definitions inside of a class with a single blank line.
+Do not separate method definitions inside of a class with a single blank line.
+
+Seperate logical blocks by a single blank line.
+
+Blank line before new non-initial function.
 
 Use a single blank line within the bodies of methods or functions in cases where this improves readability (e.g., for the purpose of delineating logical sections).
+
+<a name="newlines"/>
+### New Lines
+
+Always use unix newline chracter of '\n'. Avoid Windows at all costs.
 
 <a name="trailing_whitespace"/>
 ### Trailing Whitespace
 
 Do not include trailing whitespace on any lines.
+
+<a name="parentheses"/>
+### Parentheses
+
+Use parentheses for single line statements.
+
+```coffeescript
+# YES
+foo = require('foo')
+
+s = bar('baz')
+
+s = bar 'baz', (res) ->
+  'spam' + res.value
+
+# NO
+foo = require 'foo'
+
+s = bar 'baz'
+
+s = bar('baz', (res) ->
+  'spam' + res.value)
+```
 
 <a name="optional_commas"/>
 ### Optional Commas
@@ -82,6 +118,10 @@ foo = [
   'string'
   'values'
 ]
+
+foo:
+  bar: { baz: 1, two: 3 }
+
 bar:
   label: 'test'
   value: 87
@@ -92,6 +132,7 @@ foo = [
   'string',
   'values'
 ]
+
 bar:
   label: 'test',
   value: 87
@@ -102,14 +143,44 @@ bar:
 
 UTF-8 is the preferred source file encoding.
 
+<a name="indentation"/>
+### Indentation
+
+Only indendent code when required by the lanuage (I.E. Classes, Functions, and Conditionals).
+
+```
+# Yes
+foo 1, 2, 3, (s) ->
+  console.log(s)
+
+[1..3]
+.map (x) ->
+  x * x
+.concat([10..12])
+.filter (x) ->
+  x < 11
+.reduce (x, y) ->
+  x + y
+
+# No
+[1..3]
+  .map (x) ->
+    x * x
+  .concat([10..12])
+  .filter (x) ->
+    x < 11
+  .reduce (x, y) ->
+    x + y
+```
+
 <a name="module_imports"/>
 ## Module Imports
 
 If using a module system (CommonJS Modules, AMD, etc.), `require` statements should be placed on separate lines.
 
 ```coffeescript
-require 'lib/setup'
-Backbone = require 'backbone'
+require('lib/setup')
+Backbone = require('backbone')
 ```
 These statements should be grouped in the following order:
 
@@ -122,11 +193,21 @@ These statements should be grouped in the following order:
 
 Avoid extraneous whitespace in the following situations:
 
-- Immediately inside parentheses, brackets or braces
+- Immediately inside parentheses, brackets
 
     ```coffeescript
        ($ 'body') # Yes
        ( $ 'body' ) # No
+    ```
+
+- inside braces
+
+    ```coffeescript
+    { blarg: '1', bar: '2' }
+    { foo: { bar: { baz: 1 } } }
+    foo:
+      bar:
+        baz: 1
     ```
 
 - Immediately before a comma
@@ -137,6 +218,13 @@ Avoid extraneous whitespace in the following situations:
     ```
 
 Additional recommendations:
+
+- Surround an object assignment `:` with a space to the right and no space to the left
+
+```coffeescript
+{ foo: '1' } # Yes
+{ foo : '1' } # No
+```
 
 - Always surround these binary operators with a **single space** on either side
 
@@ -172,9 +260,29 @@ Additional recommendations:
 
 If modifying code that is described by an existing comment, update the comment such that it accurately reflects the new code. (Ideally, improve the code to obviate the need for the comment, and delete the comment entirely.)
 
-The first word of the comment should be capitalized, unless the first word is an identifier that begins with a lower-case letter.
+Always have a space between the comment token and the actual comment.
 
-If a comment is short, the period at the end can be omitted.
+Comments should be grouped with their relavent code blocks.
+
+```coffeescript
+# this is a good comment
+#This IS a bad comment
+
+# Yes
+
+# blarg
+s = f(1,2,3)
+s.then (result) ->
+  console.log(result)
+
+# No
+
+#foo
+
+f = s
+t = 1
+
+```
 
 <a name="block_comments"/>
 ### Block Comments
@@ -201,7 +309,9 @@ Paragraphs inside of block comments are separated by a line containing a single 
 <a name="inline_comments"/>
 ### Inline Comments
 
-Inline comments are placed on the line immediately above the statement that they are describing. If the inline comment is sufficiently short, it can be placed on the same line as the statement (separated by a single space from the end of the statement).
+Comments should never be on the same line as code.
+
+Inline comments are placed on the line immediately above the statement that they are describing.
 
 All inline comments should start with a `#` and a single space.
 
@@ -214,11 +324,10 @@ Do not use inline comments when they state the obvious:
   x = x + 1 # Increment x
 ```
 
-However, inline comments can be useful in certain scenarios:
-
 ```coffeescript
   # Yes
-  x = x + 1 # Compensate for border
+  # Compensate for border
+  x = x + 1
 ```
 
 <a name="naming_conventions"/>
@@ -261,35 +370,24 @@ bar = -> # Yes
 bar = () -> # No
 ```
 
-In cases where method calls are being chained and the code does not fit on a single line, each call should be placed on a separate line and indented by one level (i.e., two spaces), with a leading `.`.
+If a function call remains on the same line, use parentheses around the arguments.
 
 ```coffeescript
-[1..3]
-  .map((x) -> x * x)
-  .concat([10..12])
-  .filter((x) -> x < 11)
-  .reduce((x, y) -> x + y)
-```
+baz(12)
 
-When calling functions, choose to omit or include parentheses in such a way that optimizes for readability. Keeping in mind that "readability" can be subjective, the following examples demonstrate cases where parentheses have been omitted or included in a manner that the community deems to be optimal:
-
-```coffeescript
-baz 12
-
-brush.ellipse x: 10, y: 20 # Braces can also be omitted or included for readability
+brush.ellipse({ x: 10, y: 20 })
 
 foo(4).bar(8)
 
 obj.value(10, 20) / obj.value(20, 10)
 
-print inspect value
-
 new Tag(new Value(a, b), new Arg(c))
 ```
 
-You will sometimes see parentheses used to group functions (instead of being used to group function parameters). Examples of using this style (hereafter referred to as the "function grouping style"):
+You will sometimes see parentheses used to group functions. Parentheses should never be used this way:
 
 ```coffeescript
+# No
 ($ '#selektor').addClass 'klass'
 
 (foo 4).bar 8
@@ -298,19 +396,33 @@ You will sometimes see parentheses used to group functions (instead of being use
 This is in contrast to:
 
 ```coffeescript
-$('#selektor').addClass 'klass'
+# Yes
+$('#selektor').addClass('klass')
 
-foo(4).bar 8
+foo(4).bar(8)
 ```
 
-In cases where method calls are being chained, some adopters of this style prefer to use function grouping for the initial call only:
+<a name="objects"/>
+## Objects
 
-```coffeescript
-($ '#selektor').addClass('klass').hide() # Initial call only
-(($ '#selektor').addClass 'klass').hide() # All calls
+Single line objects should have curly braces while their multiline kin shoudln't.
+
 ```
+# Yes
+s = { foo: 1, bar: 2 }
 
-The function grouping style is not recommended. However, **if the function grouping style is adopted for a particular project, be consistent with its usage.**
+s =
+  foo:
+    bar: 1
+    baz: 2
+
+# No
+s = foo: 1, bar: 2
+
+s = foo:
+  bar: 1
+  baz: 2
+```
 
 <a name="strings"/>
 ## Strings
@@ -322,14 +434,12 @@ Use string interpolation instead of string concatenation:
 "this is an " + adjective + " string" # No
 ```
 
-Prefer single quoted strings (`''`) instead of double quoted (`""`) strings, unless features like string interpolation are being used for the given string.
+Prefer single quoted strings (`'`) instead of double quoted (`"`) strings, unless features like string interpolation are being used for the given string.
 
 <a name="conditionals"/>
 ## Conditionals
 
-Favor `unless` over `if` for negative conditions.
-
-Instead of using `unless...else`, use `if...else`:
+Don't `unless...else`; instead use `if...else`:
 
 ```coffeescript
   # Yes
@@ -399,6 +509,18 @@ For example, do not modify `Array.prototype` to introduce `Array#forEach`.
 
 Do not suppress exceptions.
 
+```coffeescript
+# No
+
+f = (x) ->
+  throw new Error('this')
+
+try
+  f(2)
+catch e
+  1+1
+```
+
 <a name="annotations"/>
 ## Annotations
 
@@ -435,6 +557,8 @@ If a custom annotation is required, the annotation should be documented in the p
 <a name="miscellaneous"/>
 ## Miscellaneous
 
+`isnt` encourages bad spelling: use '!='.
+
 `and` is preferred over `&&`.
 
 `or` is preferred over `||`.
@@ -443,32 +567,47 @@ If a custom annotation is required, the annotation should be documented in the p
 
 `not` is preferred over `!`.
 
-`or=` should be used when possible:
+`or=` should not be used.
+
+`||=` should be used when possible:
 
 ```coffeescript
-temp or= {} # Yes
-temp = temp || {} # No
+# Yes
+temp ||= {}
+
+# No
+temp = temp || {}
+temp or= {}
 ```
 
 Prefer shorthand notation (`::`) for accessing an object's prototype:
 
 ```coffeescript
-Array::slice # Yes
-Array.prototype.slice # No
+# Yes
+Array::slice
+
+# No
+Array.prototype.slice
 ```
 
 Prefer `@property` over `this.property`.
 
 ```coffeescript
-return @property # Yes
-return this.property # No
+# Yes
+return @property
+
+# No
+return this.property
 ```
 
 However, avoid the use of **standalone** `@`:
 
 ```coffeescript
-return this # Yes
-return @ # No
+# Yes
+return this
+
+# No
+return @
 ```
 
 Avoid `return` where not required, unless the explicit return increases clarity.
@@ -476,9 +615,10 @@ Avoid `return` where not required, unless the explicit return increases clarity.
 Use splats (`...`) when working with functions that accept variable numbers of arguments:
 
 ```coffeescript
-console.log args... # Yes
+# Yes
+console.log(args...)
 
-(a, b, c, rest...) -> # Yes
+(a, b, c, rest...) ->
 ```
 
 [coffeescript]: http://jashkenas.github.com/coffee-script/
